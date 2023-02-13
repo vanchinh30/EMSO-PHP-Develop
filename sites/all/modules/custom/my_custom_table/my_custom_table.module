@@ -178,7 +178,12 @@ function my_custom_form_update()
 
 function my_custom_form_delete()
 {
-  $nid = $_POST['nid'];
+  $request = OAuth2\Request::createFromGlobals();
+//  print '<pre>';
+//  print_r($request);
+//  print '</pre>';
+//  exit();
+  $nid =$request->request['nid'];
   node_delete($nid);
 //  drupal_goto('http://localhost/drupal-7.82/admin/content');
 }
