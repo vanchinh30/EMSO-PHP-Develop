@@ -63,6 +63,13 @@ function my_custom_table_menu()
     'access arguments' => array('access content'),
   );
 
+  $items['admin/custom_user/user/update'] = array(
+    'title' => 'Update User',
+    'description' => 'Update Custom User.',
+    'page callback' => 'my_custom_user_update',
+    'access arguments' => array('access content'),
+  );
+
   return $items;
 
 }
@@ -183,7 +190,7 @@ function my_custom_form_delete()
 //  print_r($request);
 //  print '</pre>';
 //  exit();
-  $nid =$request->request['nid'];
+  $nid = $request->request['nid'];
   node_delete($nid);
 //  drupal_goto('http://localhost/drupal-7.82/admin/content');
 }
@@ -198,16 +205,63 @@ function my_custom_user_create()
   $account->is_new = TRUE;
   $account->name = $request->request['username'];
   $account->pass = user_hash_password($request->request['password']);
-  $account->mail =  $request->request['e-mail'];
-  $account->init =  $request->request['e-mail'];
-  $account->status =  $request->request['status'];
-  $account->roles = array(DRUPAL_AUTHENTICATED_RID =>  $request->request['role']);
+  $account->mail = $request->request['e-mail'];
+  $account->init = $request->request['e-mail'];
+  $account->status = $request->request['status'];
+  $account->roles = array(DRUPAL_AUTHENTICATED_RID => $request->request['role']);
   $account->timezone = variable_get('date_default_timezone', '');
   user_save($account);
   print '<pre>';
   print_r($account);
   print '</pre>';
   exit();
+
+
+}
+
+function my_custom_user_update()
+{
+  global $user;
+  $request = OAuth2\Request::createFromGlobals();
+  $data = array('client_id' => 'abc',
+    'client_secret' => 'def',
+    'username' => 'chinhammk',
+    'password' => '123456mk',
+    'grant_type' => 'password'
+  );
+
+  $options = array(
+    'method' => 'POST',
+    'timeout' => 60,
+    'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
+    'data' => $data,
+  );
+  $response = drupal_http_request('http://localhost/drupal-7.82/oauth2/token', $options);
+  $result = json_decode($response->data);
+  $token = $result->access_token;
+  $data_token = oauth2_server_token_load($token);
+
+  $uid = $data_token->uid;
+  $user = user_load($uid);
+
+
+  if($user->uid == 1){
+    $uid_user = $request->request['uid'];
+    $account = user_load($uid_user);
+
+    $account->name = $request->request['username'];
+    $account->pass = user_hash_password($request->request['password']);
+    $account->mail = $request->request['e-mail'];
+    $account->init = $request->request['e-mail'];
+    $account->status = $request->request['status'];
+//    $account->roles = array(DRUPAL_AUTHENTICATED_RID => $request->request['password']);
+    user_save($account);
+    print '<pre>';
+    print_r($account);
+    print '</pre>';
+    exit();
+
+  }
 
 
 }
