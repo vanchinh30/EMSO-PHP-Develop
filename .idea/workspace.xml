@@ -20,7 +20,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c7841d12-0144-4a53-8f8a-66003883ea65" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sites/all/modules/custom/my_custom_table/my_custom_table.module" beforeDir="false" afterPath="$PROJECT_DIR$/sites/all/modules/custom/my_custom_table/my_custom_table.module" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../nukeviet/.htaccess" beforeDir="false" />
@@ -3154,7 +3153,7 @@
       <workItem from="1675743724509" duration="1148000" />
       <workItem from="1675744901561" duration="50977000" />
       <workItem from="1676031885676" duration="1799000" />
-      <workItem from="1676048440708" duration="51798000" />
+      <workItem from="1676048440708" duration="54044000" />
     </task>
     <servers />
   </component>

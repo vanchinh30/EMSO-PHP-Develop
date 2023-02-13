@@ -98,7 +98,6 @@ function my_custom_form_add()
 
   if ($data_token->uid === $user->uid) {
     $node = new stdClass();
-    $body_text = 'This is the body text I want entered with the node.';
     $node->type = 'article';
     node_object_prepare($node);
 
@@ -111,6 +110,12 @@ function my_custom_form_add()
     $node->field_category[$node->language][0]['target_id'] = $request->request['field-category'];
     $path = 'content/programmatically_created_node_' . date('YmdHis');
     $node->path = array('alias' => $path);
+
+//    print '<pre>';
+//    print_r($request);
+//    print '</pre>';
+//    exit();
+
     node_save($node);
 
 
@@ -118,7 +123,7 @@ function my_custom_form_add()
       'title' => $node->title,
       'author' => $user->name,
       'type' => $node->type,
-      'value' => $body_text,
+      'value' => $node->body[LANGUAGE_NONE][0]['value'],
       'format' => 'filtered_html'
     );
     return drupal_json_output($data);
@@ -129,7 +134,7 @@ function my_custom_form_add()
 function my_custom_form_update()
 {
   global $user;
-
+  $request = OAuth2\Request::createFromGlobals();
   $data = array('client_id' => 'abc',
     'client_secret' => 'def',
     'username' => 'chinhammk',
@@ -145,23 +150,27 @@ function my_custom_form_update()
   );
   $response = drupal_http_request('http://localhost/drupal-7.82/oauth2/token', $options);
   $result = json_decode($response->data);
-
-
   $token = $result->access_token;
   $data_token = oauth2_server_token_load($token);
   $uid = $data_token->uid;
   $user = user_load($uid);
 
-  $nid = $_POST['nid'];
+  $nid = $request->request['nid'];
   $node = node_load($nid);
-  $node->title = 'update node';
+  $node->title = $request->request['title'];
+  $node->body[LANGUAGE_NONE][0]['summary'] = $request->request['summary'];
+  $node->body[LANGUAGE_NONE][0]['value'] = $request->request['body-text'];
+//  print '<pre>';
+//  print_r($node);
+//  print '</pre>';
+//  exit();
   node_save($node);
 
   $data = array(
     'title' => $node->title,
     'author' => $user->name,
     'type' => $node->type,
-    'value' => $node->body[$node->language][0]['value'],
+    'value' => $node->body[LANGUAGE_NONE][0]['value'],
     'format' => 'filtered_html'
   );
   return drupal_json_output($data);
