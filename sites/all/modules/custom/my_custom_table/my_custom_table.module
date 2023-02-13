@@ -192,17 +192,23 @@ require_once DRUPAL_ROOT . '/' . variable_get('password_inc', 'includes/password
 
 function my_custom_user_create()
 {
+  $request = OAuth2\Request::createFromGlobals();
 
   $account = new stdClass;
   $account->is_new = TRUE;
-  $account->name = 'foo';
-  $account->pass = user_hash_password('123456mk');
-  $account->mail = 'foo@example.com';
-  $account->init = 'foo@example.com';
-  $account->status = TRUE;
-  $account->roles = array(DRUPAL_AUTHENTICATED_RID => 'authenticated user');
+  $account->name = $request->request['username'];
+  $account->pass = user_hash_password($request->request['password']);
+  $account->mail =  $request->request['e-mail'];
+  $account->init =  $request->request['e-mail'];
+  $account->status =  $request->request['status'];
+  $account->roles = array(DRUPAL_AUTHENTICATED_RID =>  $request->request['role']);
   $account->timezone = variable_get('date_default_timezone', '');
   user_save($account);
+  print '<pre>';
+  print_r($account);
+  print '</pre>';
+  exit();
+
 
 }
 
