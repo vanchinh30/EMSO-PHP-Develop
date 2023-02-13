@@ -1,0 +1,42 @@
+<?php
+function latest_content_menu() {
+  $items = array();
+
+  // The path that the endpoint will be registered to
+  $items['ajax/latest-content.json'] = array(
+
+    // The name of the function called when the path is accessed
+    'page callback' => 'latest_content_page_callback',
+
+    // Set this value to TRUE to allow access to any user
+    'access callback' => TRUE,
+
+    // Declare this as a simple registered path
+    'type' => MENU_CALLBACK,
+  );
+
+
+
+  // Return the $items array to register the path
+  return $items;
+}
+
+
+function latest_content_page_callback(){
+//  $data = array(1 => 'hello world');
+//  return drupal_json_output($data);
+
+//  $query = db_select('node');
+////  $query->addField('node', 'nid');
+////  $query->addField('node', 'title');
+//  $query->fields('node');
+//  $query->condition('node.nid', 2, '>=');
+//  $data = $query->execute()->fetchAll();
+//  return drupal_json_output($data);
+
+
+
+}
+
+
+

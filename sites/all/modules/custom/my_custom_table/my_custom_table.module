@@ -1,0 +1,316 @@
+<?php
+function my_custom_table_menu(){
+  $items['admin/custom/my_custom_table/add'] = array(
+    'title' => 'My Custom Table',
+    'description' => 'View My Custom Table.',
+    'page callback' => 'my_custom_table_block_view',
+    'access arguments' => array('access my_custom_table'),
+    'weight' => -14,
+  );
+
+  $items['admin/custom/my_custom_table/%/edit'] = array(
+    'title' => 'My Custom Table',
+    'description' => 'View My Custom Table.',
+    'page callback' => 'my_custom_table_edit_block_view',
+    'page argument' => array(3),
+    'access arguments' => array('access my_custom_table'),
+    'weight' => -14,
+  );
+
+  $items['admin/custom/my_custom_table/%/delete'] = array(
+    'title' => 'My Custom Table',
+    'description' => 'View My Custom Table.',
+    'page callback' => 'my_custom_delete',
+    'page argument' => array(3),
+    'access arguments' => array('access my_custom_table'),
+    'weight' => -14,
+  );
+
+  $items['admin/custom/my_custom_table'] = array(
+    'title' => 'My Custom Table',
+    'description' => 'View My Custom Table.',
+    'page callback' => 'my_custom_table_sort_with_pager_content',
+    'access arguments' => array('access my_custom_table'),
+    'weight' => -14,
+  );
+
+  $items['admin/custom_node/node/create'] = array(
+    'title' => 'Create Node',
+    'description' => 'View My Custom Node.',
+    'page callback' => 'my_custom_form_add',
+    'access arguments' => array('access content'),
+  );
+
+  $items['admin/custom_node/node/update'] = array(
+    'title' => 'Update Node',
+    'description' => 'Update Custom Node.',
+    'page callback' => 'my_custom_form_update',
+    'access arguments' => array('access content'),
+  );
+
+  $items['admin/custom_node/node/delete'] = array(
+    'title' => 'Delete Node',
+    'description' => 'Delete Custom Node.',
+    'page callback' => 'my_custom_form_delete',
+    'access arguments' => array('access content'),
+  );
+
+  $items['admin/custom_user/user/create'] = array(
+    'title' => 'Create User',
+    'description' => 'Create Custom User.',
+    'page callback' => 'my_custom_user_create',
+    'access arguments' => array('access content'),
+  );
+
+  return $items;
+
+}
+
+
+
+function my_custom_form_add(){
+  global $user;
+
+
+  $data = array('client_id' => 'abc',
+    'client_secret' => 'def',
+    'username' => 'chinhammk',
+    'password' => '123456mk',
+    'grant_type' => 'password'
+    );
+
+  $options = array(
+    'method' => 'POST',
+    'timeout' => 60,
+    'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
+    'data' => $data,
+  );
+  $response = drupal_http_request('http://localhost/drupal-7.82/oauth2/token', $options);
+  $result = json_decode($response->data);
+
+
+  $token = $result->access_token;
+  $data_token = oauth2_server_token_load($token);
+  $uid = $data_token->uid;
+  $user = user_load($uid);
+
+
+  if($data_token->uid === $user->uid ){
+    $body_text = 'This is the body text I want entered with the node.';
+    $node = new stdClass();
+    $node->type = 'article';
+    node_object_prepare($node);
+
+    $node->title    = 'Node created: ' . date('c');
+
+    $node->uid = $user->uid;
+    $node->status = 1;
+    $node->language = LANGUAGE_NONE;
+    $node->body[$node->language][0]['value']   = $body_text;
+    $node->body[$node->language][0]['summary'] = text_summary($body_text);
+    $node->body[$node->language][0]['format']  = 'filtered_html';
+
+    $path = 'content/programmatically_created_node_' . date('YmdHis');
+    $node->path = array('alias' => $path); node_save($node);
+    $data = array(
+      'title' => $node->title,
+      'author' => $user->name,
+      'type' => $node->type,
+      'value' => $body_text,
+      'format' => 'filtered_html'
+    );
+    return drupal_json_output($data);
+  }
+
+}
+
+function my_custom_form_update(){
+//  $nid = 1;
+  global $user;
+
+
+  $data = array('client_id' => 'abc',
+    'client_secret' => 'def',
+    'username' => 'chinhammk',
+    'password' => '123456mk',
+    'grant_type' => 'password'
+  );
+
+  $options = array(
+    'method' => 'POST',
+    'timeout' => 60,
+    'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
+    'data' => $data,
+  );
+  $response = drupal_http_request('http://localhost/drupal-7.82/oauth2/token', $options);
+  $result = json_decode($response->data);
+
+
+  $token = $result->access_token;
+  $data_token = oauth2_server_token_load($token);
+  $uid = $data_token->uid;
+  $user = user_load($uid);
+
+  $nid = $_POST['nid'];
+  $node = node_load($nid);
+  $node->title = 'update node';
+  node_save($node);
+
+  $data = array(
+    'title' => $node->title,
+    'author' => $user->name,
+    'type' => $node->type,
+    'value' => $node->body[$node->language][0]['value'],
+    'format' => 'filtered_html'
+  );
+  return drupal_json_output($data);
+}
+
+function my_custom_form_delete(){
+  $nid = $_POST['nid'];
+  node_delete($nid);
+//  drupal_goto('http://localhost/drupal-7.82/admin/content');
+}
+
+function my_custom_user_create(){
+
+  $hash =user_hash_password('123456mk');
+  print_r($hash);
+  exit();
+  $account = new stdClass;
+  $account->is_new = TRUE;
+  $account->name = 'foo';
+  $account->pass = user_hash_password('123456mk');
+  $account->mail = 'foo@example.com';
+  $account->init = 'foo@example.com';
+  $account->status = TRUE;
+  $account->roles = array(DRUPAL_AUTHENTICATED_RID => TRUE);
+  $account->timezone = variable_get('date_default_timezone', '');
+  user_save($account);
+}
+
+function my_custom_table_block_view(){
+
+  if (drupal_is_front_page())
+  {
+    return NULL;
+  }
+
+  $form = drupal_get_form('my_custom_table_form');
+  $block = array
+  (
+// 'subject' => t('Subject'),
+    'content' => $form,
+  );
+  return $block;
+}
+
+  function my_custom_table_form($form, &$form_state)
+  {
+// now I add a text field to the form
+    $form['my_custom_table_title'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Title'),
+      '#description' => t('The Title of the My Custom Table.'),
+      '#size' => 40,
+      '#maxlength' => 120,
+      '#required' => TRUE,
+    );
+
+    // Textarea for the body
+    $form['my_custom_table_description'] = array(
+      '#type' => 'textarea',
+      '#rows' => 10,
+      '#columns' => 40,
+      '#title' => t('Description'),
+      '#required' => TRUE,
+      '#description'=> t('The text of My Custom Table .'),
+    );
+
+    // Checkbox to indicate.
+    $form['my_custom_active'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Status'),
+      '#description' => t("Indicates whether the active or inactive."),
+    );
+// now I add also a button
+    $form['submit'] = array
+    (
+      '#type' => 'submit',
+      '#value' => t('Save'),
+    );
+// and now I assign a my function as handler of the submit event
+// $form['#validate'][] = 'my_custom_table_submit_handler';
+    $form['#submit'][] = 'my_custom_table_submit_handler';
+
+    return $form;
+  }
+
+function my_custom_table_submit_handler($form, &$form_state)
+{
+// this function will be executed after the click
+// event of the user on the “submit” button.
+// here I only print a message
+// you can access a database, redirect, or whatever you want, obviously
+  $error = 1;
+  if ( !isset($form_state['values']['my_custom_table_title']) || !isset($form_state['values']['my_custom_table_description']) ) {
+    $error = 0 ;
+  }
+
+// echo $error;
+//  exit();
+
+  if($error){
+    $my_custom_table_title = $form_state['values']['my_custom_table_title'];
+    $my_custom_table_description = $form_state['values']['my_custom_table_description'];
+    $nid = db_insert('custom_table') // Table name no longer needs {}
+    ->fields(array(
+      'title' => $my_custom_table_title,
+      'description' => $my_custom_table_description,
+    ))
+      ->execute();
+    drupal_set_message(t('Record has been added!'));
+  }
+}
+function my_custom_table_sort_with_pager_content() {
+  $header = array(
+    array('data' => t('Custom id'), 'field' => 'id', 'sort' => 'asc'),
+    array('data' => t('Title'), 'field' => 'title'),
+    array('data' => t('Status'), 'field' => 'status'),
+    array('data' => t('Action')),
+  );
+//
+  $query = db_select('custom_table', 'c');
+  $query->fields('c', array('id', 'title', 'status'));
+  $result = $query->execute();
+
+
+
+
+  foreach($result as $res){
+    $rows[] = array($res->id, $res->title, $res->status,l("Edit","admin/custom/my_custom_table/".$res->id."/edit")."|". l("Delete", "admin/custom/my_custom_table/".$res->id."/delete"));
+  }
+  return theme('table', array('header' => $header, 'rows'=> $rows));
+
+}
+
+function my_custom_delete(){
+  $id = arg(3);
+  $delete = db_delete('custom_table')
+  ->condition('id',$id,'=')
+    ->execute();
+  drupal_set_message(t('Record has been deleted!'));
+  drupal_goto("admin/custom/my_custom_table/");
+}
+
+function my_custom_table_edit_block_view(){
+  $id = arg(3);
+  $result = db_query('SELECT * FROM {custom_table} WHERE id =:tid',array(':tid' => $id));
+  $record = $result->fetchObject();
+
+  print '<pre>';
+  print_r($record);
+  print '</pre>';
+  exit();
+}
+

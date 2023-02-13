@@ -1,0 +1,10 @@
+name = "My Custom Table"
+description = "Testing form Submission in custom table for Drupal."
+core = 7.x
+package = "My Module"
+configure = admin/custom/my_custom_table
+
+version = "7.x-2.0"
+core = "7.x"
+project = "my_custom_table"
+datestamp = "1385568677"

@@ -1,0 +1,26 @@
+<?php
+function book_menu(){
+  $items['book'] = array(
+    'title' => 'Book Views',
+    'description' => 'Books Information',
+    'page callback' => 'book_list',
+    'access callback'   =>  true,
+  );
+  return $items;
+}
+
+function book_list(){
+  $form['book'] = array(
+    '#title' => 'List Book',
+    '#type' => 'textfield',
+    '#required' => TRUE,
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Save',
+  );
+
+  return $form;
+}
+

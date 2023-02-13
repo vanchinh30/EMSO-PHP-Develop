@@ -1,0 +1,3 @@
+name = books
+description = “Manage Books”
+core = 7.x
