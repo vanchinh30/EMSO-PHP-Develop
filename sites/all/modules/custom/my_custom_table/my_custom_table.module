@@ -255,39 +255,12 @@ function my_custom_user_update()
 
 function my_custom_user_delete()
 {
-  global $user;
   $request = OAuth2\Request::createFromGlobals();
-  $data = array('client_id' => 'abc',
-    'client_secret' => 'def',
-    'username' => 'chinhammk',
-    'password' => '123456mk',
-    'grant_type' => 'password'
-  );
 
-  $options = array(
-    'method' => 'POST',
-    'timeout' => 60,
-    'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
-    'data' => $data,
-  );
-  $response = drupal_http_request('http://localhost/drupal-7.82/oauth2/token', $options);
-  $result = json_decode($response->data);
-  $token = $result->access_token;
-  $data_token = oauth2_server_token_load($token);
-
-  $uid = $data_token->uid;
-  $user = user_load($uid);
-
-
-  if ($user->uid == 1) {
+  if (get_token() == true) {
     $uid_user = $request->request['uid'];
     $account = user_load($uid_user);
     user_delete($account->uid);
-
-    print '<pre>';
-    print_r($account);
-    print '</pre>';
-    exit();
   }
 }
 
