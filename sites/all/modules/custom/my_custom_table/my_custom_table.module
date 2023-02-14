@@ -119,6 +119,13 @@ function my_custom_table_menu()
     'access arguments' => array('access content'),
   );
 
+  $items['admin/custom_taxonomy/taxonomy/update'] = array(
+    'title' => 'Update Taxonomy',
+    'description' => 'Update Custom Taxonomy',
+    'page callback' => 'my_custom_taxonomy_update',
+    'access arguments' => array('access content'),
+  );
+
   return $items;
 
 }
@@ -284,6 +291,23 @@ function my_custom_taxonomy_create()
 
   }
 
+}
+
+function my_custom_taxonomy_update(){
+  $request = OAuth2\Request::createFromGlobals();
+  if (get_token() ==  true){
+    $vid = $request->request['vid'];
+    $vocabulary = taxonomy_vocabulary_load($vid);
+    $vocabulary->name = $request->request['name'];
+    $vocabulary->machine_name = $request->request['machine_name'];
+    $vocabulary->description = $request->request['description'];
+    taxonomy_vocabulary_save($vocabulary);
+    print '<pre>';
+    print_r($vocabulary);
+    print '</pre>';
+    exit();
+
+  }
 }
 
 //function my_custom_term_create(){
