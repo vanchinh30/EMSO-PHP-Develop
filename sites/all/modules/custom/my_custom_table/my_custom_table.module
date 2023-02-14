@@ -1,4 +1,39 @@
 <?php
+
+function get_token()
+{
+  global $user;
+  $data = array('client_id' => 'abc',
+    'client_secret' => 'def',
+    'username' => 'chinhammk',
+    'password' => '123456mk',
+    'grant_type' => 'password'
+  );
+
+  $options = array(
+    'method' => 'POST',
+    'timeout' => 60,
+    'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
+    'data' => $data,
+  );
+  $response = drupal_http_request('http://localhost/drupal-7.82/oauth2/token', $options);
+  $result = json_decode($response->data);
+  $token = $result->access_token;
+  $data_token = oauth2_server_token_load($token);
+  $uid = $data_token->uid;
+  $user = user_load($uid);
+  if ($user->uid == 1) {
+    return TRUE;
+  }
+  return FALSE;
+//    print '<pre>';
+//    print_r($user);
+//    print '</pre>';
+//    exit();
+
+}
+
+
 function my_custom_table_menu()
 {
   $items['admin/custom/my_custom_table/add'] = array(
@@ -91,33 +126,31 @@ function my_custom_table_menu()
 
 function my_custom_form_add()
 {
-  global $user;
+  get_token();
   $request = OAuth2\Request::createFromGlobals();
 
 
-  $data = array('client_id' => 'abc',
-    'client_secret' => 'def',
-    'username' => 'chinhammk',
-    'password' => '123456mk',
-    'grant_type' => 'password'
-  );
+//  $data = array('client_id' => 'abc',
+//    'client_secret' => 'def',
+//    'username' => 'chinhammk',
+//    'password' => '123456mk',
+//    'grant_type' => 'password'
+//  );
+//
+//  $options = array(
+//    'method' => 'POST',
+//    'timeout' => 60,
+//    'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
+//    'data' => $data,
+//  );
+//  $response = drupal_http_request('http://localhost/drupal-7.82/oauth2/token', $options);
+//  $result = json_decode($response->data);
+//  $token = $result->access_token;
+//  $data_token = oauth2_server_token_load($token);
+//  $uid = $data_token->uid;
+//  $user = user_load($uid);
 
-  $options = array(
-    'method' => 'POST',
-    'timeout' => 60,
-    'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
-    'data' => $data,
-  );
-  $response = drupal_http_request('http://localhost/drupal-7.82/oauth2/token', $options);
-  $result = json_decode($response->data);
-
-
-  $token = $result->access_token;
-  $data_token = oauth2_server_token_load($token);
-  $uid = $data_token->uid;
-  $user = user_load($uid);
-
-  if ($data_token->uid === $user->uid) {
+  if (get_token() == TRUE) {
     $node = new stdClass();
     $node->type = 'article';
     node_object_prepare($node);
@@ -125,17 +158,16 @@ function my_custom_form_add()
     $node->title = $request->request['title'];
     $node->body[LANGUAGE_NONE][0]['summary'] = $request->request['summary'];
     $node->body[LANGUAGE_NONE][0]['value'] = $request->request['body-text'];
-    $node->uid = $user->uid;
     $node->status = 1;
     $node->body[LANGUAGE_NONE][0]['format'] = 'filtered_html';
     $node->field_category[$node->language][0]['target_id'] = $request->request['field-category'];
     $path = 'content/programmatically_created_node_' . date('YmdHis');
     $node->path = array('alias' => $path);
 
-//    print '<pre>';
-//    print_r($request);
-//    print '</pre>';
-//    exit();
+    print '<pre>';
+    print_r($node);
+    print '</pre>';
+    exit();
 
     node_save($node);
 
@@ -315,7 +347,8 @@ function my_custom_user_delete()
   }
 }
 
-function my_custom_taxonomy_create(){
+function my_custom_taxonomy_create()
+{
   global $user;
   $request = OAuth2\Request::createFromGlobals();
   $data = array('client_id' => 'abc',
@@ -339,8 +372,7 @@ function my_custom_taxonomy_create(){
   $user = user_load($uid);
 
 
-
-  if ($user->uid == 1){
+  if ($user->uid == 1) {
     $vocabulary = new stdClass();
     $vocabulary->name = $request->request['name'];
     $vocabulary->machine_name = $request->request['machine_name'];
@@ -351,7 +383,6 @@ function my_custom_taxonomy_create(){
     print_r($vocabulary);
     print '</pre>';
     exit();
-
 
 
   }
