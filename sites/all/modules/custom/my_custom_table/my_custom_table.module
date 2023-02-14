@@ -198,9 +198,10 @@ function my_custom_form_delete()
 //  print_r($request);
 //  print '</pre>';
 //  exit();
-  $nid = $request->request['nid'];
-  node_delete($nid);
-//  drupal_goto('http://localhost/drupal-7.82/admin/content');
+  if(get_token() == true){
+    $nid = $request->request['nid'];
+    node_delete($nid);
+  }
 }
 
 require_once DRUPAL_ROOT . '/' . variable_get('password_inc', 'includes/password.inc');
