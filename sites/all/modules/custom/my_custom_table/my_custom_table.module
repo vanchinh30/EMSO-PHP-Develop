@@ -266,30 +266,10 @@ function my_custom_user_delete()
 
 function my_custom_taxonomy_create()
 {
-  global $user;
   $request = OAuth2\Request::createFromGlobals();
-  $data = array('client_id' => 'abc',
-    'client_secret' => 'def',
-    'username' => 'chinhammk',
-    'password' => '123456mk',
-    'grant_type' => 'password'
-  );
-
-  $options = array(
-    'method' => 'POST',
-    'timeout' => 60,
-    'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
-    'data' => $data,
-  );
-  $response = drupal_http_request('http://localhost/drupal-7.82/oauth2/token', $options);
-  $result = json_decode($response->data);
-  $token = $result->access_token;
-  $data_token = oauth2_server_token_load($token);
-  $uid = $data_token->uid;
-  $user = user_load($uid);
 
 
-  if ($user->uid == 1) {
+  if (get_token() == true) {
     $vocabulary = new stdClass();
     $vocabulary->name = $request->request['name'];
     $vocabulary->machine_name = $request->request['machine_name'];
