@@ -126,6 +126,13 @@ function my_custom_table_menu()
     'access arguments' => array('access content'),
   );
 
+  $items['admin/custom_taxonomy/taxonomy/delete'] = array(
+    'title' => 'Delete Taxonomy',
+    'description' => 'Delete Custom Taxonomy',
+    'page callback' => 'my_custom_taxonomy_delete',
+    'access arguments' => array('access content'),
+  );
+
   return $items;
 
 }
@@ -307,6 +314,15 @@ function my_custom_taxonomy_update(){
     print '</pre>';
     exit();
 
+  }
+}
+
+function my_custom_taxonomy_delete(){
+  $request = OAuth2\Request::createFromGlobals();
+  if (get_token() ==  true){
+    $vid = $request->request['vid'];
+    $vocabulary = taxonomy_vocabulary_load($vid);
+    taxonomy_vocabulary_delete($vocabulary->vid);
   }
 }
 
