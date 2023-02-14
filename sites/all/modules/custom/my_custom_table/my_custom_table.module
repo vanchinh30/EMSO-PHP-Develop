@@ -77,6 +77,13 @@ function my_custom_table_menu()
     'access arguments' => array('access content'),
   );
 
+  $items['admin/custom_taxonomy/taxonomy/create'] = array(
+    'title' => 'Create Taxonomy',
+    'description' => 'Create Custom Taxonomy',
+    'page callback' => 'my_custom_taxonomy_create',
+    'access arguments' => array('access content'),
+  );
+
   return $items;
 
 }
@@ -247,12 +254,11 @@ function my_custom_user_update()
   $result = json_decode($response->data);
   $token = $result->access_token;
   $data_token = oauth2_server_token_load($token);
-
   $uid = $data_token->uid;
   $user = user_load($uid);
 
 
-  if($user->uid == 1){
+  if ($user->uid == 1) {
     $uid_user = $request->request['uid'];
     $account = user_load($uid_user);
 
@@ -297,7 +303,6 @@ function my_custom_user_delete()
   $user = user_load($uid);
 
 
-
   if ($user->uid == 1) {
     $uid_user = $request->request['uid'];
     $account = user_load($uid_user);
@@ -308,8 +313,60 @@ function my_custom_user_delete()
     print '</pre>';
     exit();
   }
+}
+
+function my_custom_taxonomy_create(){
+  global $user;
+  $request = OAuth2\Request::createFromGlobals();
+  $data = array('client_id' => 'abc',
+    'client_secret' => 'def',
+    'username' => 'chinhammk',
+    'password' => '123456mk',
+    'grant_type' => 'password'
+  );
+
+  $options = array(
+    'method' => 'POST',
+    'timeout' => 60,
+    'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
+    'data' => $data,
+  );
+  $response = drupal_http_request('http://localhost/drupal-7.82/oauth2/token', $options);
+  $result = json_decode($response->data);
+  $token = $result->access_token;
+  $data_token = oauth2_server_token_load($token);
+  $uid = $data_token->uid;
+  $user = user_load($uid);
+
+
+
+  if ($user->uid == 1){
+    $vocabulary = new stdClass();
+    $vocabulary->name = $request->request['name'];
+    $vocabulary->machine_name = $request->request['machine_name'];
+    $vocabulary->description = $request->request['description'];
+    $vocabulary->module = $request->request['module'];
+    taxonomy_vocabulary_save($vocabulary);
+    print '<pre>';
+    print_r($vocabulary);
+    print '</pre>';
+    exit();
+
+
+
+  }
 
 }
+
+//function my_custom_term_create(){
+//  $newterm = new stdClass();
+//  $newterm->vid = '';
+//  $newterm->name = '';
+//  $newterm->description = '';
+//  taxonomy_term_save($newterm);
+//}
+
+
 
 
 
