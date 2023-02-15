@@ -22,7 +22,7 @@ function get_token()
   $data_token = oauth2_server_token_load($token);
   $uid = $data_token->uid;
   $user = user_load($uid);
-  if ($user->uid == 1) {
+  if ($user->uid ) {
     return TRUE;
   }
   return FALSE;
@@ -170,7 +170,6 @@ function my_custom_table_menu()
 
 function my_custom_form_add()
 {
-  get_token();
   $request = OAuth2\Request::createFromGlobals();
 
 
