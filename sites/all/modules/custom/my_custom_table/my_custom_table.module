@@ -133,6 +133,13 @@ function my_custom_table_menu()
     'access arguments' => array('access content'),
   );
 
+  $items['admin/custom_term/term/create'] = array(
+    'title' => 'Create Term',
+    'description' => 'Create Custom Term',
+    'page callback' => 'my_custom_term_create',
+    'access arguments' => array('access content'),
+  );
+
   return $items;
 
 }
@@ -326,13 +333,22 @@ function my_custom_taxonomy_delete(){
   }
 }
 
-//function my_custom_term_create(){
-//  $newterm = new stdClass();
-//  $newterm->vid = '';
-//  $newterm->name = '';
-//  $newterm->description = '';
-//  taxonomy_term_save($newterm);
-//}
+function my_custom_term_create(){
+  $request = OAuth2\Request::createFromGlobals();
+  if (get_token() ==  true){
+    $newterm = new stdClass();
+    $newterm->vid = $request->request['vid'];
+    $newterm->name = $request->request['name'];
+    $newterm->description = $request->request['description'];
+    $newterm->parent = 0;
+    taxonomy_term_save($newterm);
+    print '<pre>';
+    print_r($newterm);
+    print '</pre>';
+    exit();
+
+  }
+}
 
 
 
