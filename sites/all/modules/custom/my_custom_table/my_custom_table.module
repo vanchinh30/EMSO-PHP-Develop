@@ -147,6 +147,13 @@ function my_custom_table_menu()
     'access arguments' => array('access content'),
   );
 
+  $items['admin/custom_term/term/delete'] = array(
+    'title' => 'Delete Term',
+    'description' => 'Delete Custom Term',
+    'page callback' => 'my_custom_term_delete',
+    'access arguments' => array('access content'),
+  );
+
   return $items;
 
 }
@@ -359,9 +366,9 @@ function my_custom_term_create(){
 function my_custom_term_update()
 {
   $request = OAuth2\Request::createFromGlobals();
-  $vid = 3;
+  $vid = $request->request['vid'];
   $vocabulary = taxonomy_vocabulary_load($vid);
-  $tid = 1;
+  $tid = $request->request['tid'];
   $term = taxonomy_term_load($tid);
 
   if (get_token() == true && $vocabulary->vid == $term->vid){
@@ -375,6 +382,19 @@ function my_custom_term_update()
     exit();
   }
 }
+
+function my_custom_term_delete(){
+  $request = OAuth2\Request::createFromGlobals();
+  $vid = $request->request['vid'];
+  $vocabulary = taxonomy_vocabulary_load($vid);
+  $tid = $request->request['tid'];
+  $term = taxonomy_term_load($tid);
+  if (get_token() == true && $vocabulary->vid == $term->vid){
+    taxonomy_term_delete($term->tid);
+  }
+}
+
+
 
 
 
