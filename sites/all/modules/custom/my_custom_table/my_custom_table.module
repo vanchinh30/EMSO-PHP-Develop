@@ -240,10 +240,10 @@ function my_custom_form_delete()
   }
 }
 
-require_once DRUPAL_ROOT . '/' . variable_get('password_inc', 'includes/password.inc');
 
 function my_custom_user_create()
 {
+  require_once DRUPAL_ROOT . '/' . variable_get('password_inc', 'includes/password.inc');
   $request = OAuth2\Request::createFromGlobals();
 
   if (get_token() == true) {
