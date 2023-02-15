@@ -140,6 +140,13 @@ function my_custom_table_menu()
     'access arguments' => array('access content'),
   );
 
+  $items['admin/custom_term/term/update'] = array(
+    'title' => 'Update Term',
+    'description' => 'Update Custom Term',
+    'page callback' => 'my_custom_term_update',
+    'access arguments' => array('access content'),
+  );
+
   return $items;
 
 }
@@ -346,9 +353,30 @@ function my_custom_term_create(){
     print_r($newterm);
     print '</pre>';
     exit();
-
   }
 }
+
+function my_custom_term_update()
+{
+  $request = OAuth2\Request::createFromGlobals();
+  $vid = 3;
+  $vocabulary = taxonomy_vocabulary_load($vid);
+  $tid = 1;
+  $term = taxonomy_term_load($tid);
+
+  if (get_token() == true && $vocabulary->vid == $term->vid){
+    $term->name = $request->request['name'];
+    $term->description = $request->request['description'];
+    $term->parent = 0;
+    taxonomy_term_save($term);
+    print '<pre>';
+    print_r($term);
+    print '</pre>';
+    exit();
+  }
+}
+
+
 
 
 
