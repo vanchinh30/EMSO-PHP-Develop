@@ -361,7 +361,6 @@ function my_custom_term_create(){
   $request = OAuth2\Request::createFromGlobals();
   if (get_token() ==  true){
     $newterm = new stdClass();
-    $newterm->vid = $request->request['vid'];
     $newterm->name = $request->request['name'];
     $newterm->description = $request->request['description'];
     $newterm->parent = 0;
