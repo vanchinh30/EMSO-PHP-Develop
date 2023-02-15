@@ -1,5 +1,14 @@
 <?php
 
+function dd($a)
+{
+  print '<pre>';
+  print_r($a);
+  print '</pre>';
+  exit();
+}
+
+
 function get_token()
 {
   global $user;
@@ -22,14 +31,11 @@ function get_token()
   $data_token = oauth2_server_token_load($token);
   $uid = $data_token->uid;
   $user = user_load($uid);
-  if ($user->uid ) {
+  if ($user->uid) {
     return TRUE;
   }
   return FALSE;
-//    print '<pre>';
-//    print_r($user);
-//    print '</pre>';
-//    exit();
+
 
 }
 
@@ -151,7 +157,7 @@ function my_custom_table_menu()
     'title' => 'Update Term',
     'description' => 'Update Custom Term',
     'page callback' => 'my_custom_term_update',
-    'page argument' => array(2,4),
+    'page argument' => array(2, 4),
     'access arguments' => array('access content'),
   );
 
@@ -159,7 +165,7 @@ function my_custom_table_menu()
     'title' => 'Delete Term',
     'description' => 'Delete Custom Term',
     'page callback' => 'my_custom_term_delete',
-    'page argument' => array(2,4),
+    'page argument' => array(2, 4),
     'access arguments' => array('access content'),
   );
 
@@ -186,12 +192,6 @@ function my_custom_form_add()
     $node->field_category[$node->language][0]['target_id'] = $request->request['field-category'];
     $path = 'content/programmatically_created_node_' . date('YmdHis');
     $node->path = array('alias' => $path);
-
-//    print '<pre>';
-//    print_r($node);
-//    print '</pre>';
-//    exit();
-
     node_save($node);
 
 
@@ -217,10 +217,6 @@ function my_custom_form_update()
     $node->title = $request->request['title'];
     $node->body[LANGUAGE_NONE][0]['summary'] = $request->request['summary'];
     $node->body[LANGUAGE_NONE][0]['value'] = $request->request['body-text'];
-//  print '<pre>';
-//  print_r($node);
-//  print '</pre>';
-//  exit();
     node_save($node);
 
   }
@@ -238,11 +234,7 @@ function my_custom_form_update()
 function my_custom_form_delete()
 {
   $request = OAuth2\Request::createFromGlobals();
-//  print '<pre>';
-//  print_r($request);
-//  print '</pre>';
-//  exit();
-  if(get_token() == true){
+  if (get_token() == true) {
     $nid = arg(3);
     node_delete($nid);
   }
@@ -254,7 +246,7 @@ function my_custom_user_create()
 {
   $request = OAuth2\Request::createFromGlobals();
 
-  if (get_token() == true){
+  if (get_token() == true) {
     $account = new stdClass;
     $account->is_new = TRUE;
     $account->name = $request->request['username'];
@@ -266,10 +258,7 @@ function my_custom_user_create()
     $account->timezone = variable_get('date_default_timezone', '');
     user_save($account);
   }
-  print '<pre>';
-  print_r($account);
-  print '</pre>';
-  exit();
+  dd($account);
 
 
 }
@@ -278,7 +267,7 @@ function my_custom_user_update()
 {
   $request = OAuth2\Request::createFromGlobals();
 
-  if (get_token() ==  true) {
+  if (get_token() == true) {
     $uid_user = arg(3);
     $account = user_load($uid_user);
 
@@ -289,10 +278,7 @@ function my_custom_user_update()
     $account->status = $request->request['status'];
 //    $account->roles = array(DRUPAL_AUTHENTICATED_RID => $request->request['password']);
     user_save($account);
-    print '<pre>';
-    print_r($account);
-    print '</pre>';
-    exit();
+    dd($account);
 
   }
 }
@@ -320,54 +306,48 @@ function my_custom_taxonomy_create()
     $vocabulary->description = $request->request['description'];
     $vocabulary->module = $request->request['module'];
     taxonomy_vocabulary_save($vocabulary);
-    print '<pre>';
-    print_r($vocabulary);
-    print '</pre>';
-    exit();
+    dd($vocabulary);
 
 
   }
 
 }
 
-function my_custom_taxonomy_update(){
+function my_custom_taxonomy_update()
+{
   $request = OAuth2\Request::createFromGlobals();
-  if (get_token() ==  true){
+  if (get_token() == true) {
     $vid = arg(3);
     $vocabulary = taxonomy_vocabulary_load($vid);
     $vocabulary->name = $request->request['name'];
     $vocabulary->machine_name = $request->request['machine_name'];
     $vocabulary->description = $request->request['description'];
     taxonomy_vocabulary_save($vocabulary);
-    print '<pre>';
-    print_r($vocabulary);
-    print '</pre>';
-    exit();
+    dd($vocabulary);
 
   }
 }
 
-function my_custom_taxonomy_delete(){
+function my_custom_taxonomy_delete()
+{
   $request = OAuth2\Request::createFromGlobals();
-  if (get_token() ==  true){
+  if (get_token() == true) {
     $vid = arg(3);
     $vocabulary = taxonomy_vocabulary_load($vid);
     taxonomy_vocabulary_delete($vocabulary->vid);
   }
 }
 
-function my_custom_term_create(){
+function my_custom_term_create()
+{
   $request = OAuth2\Request::createFromGlobals();
-  if (get_token() ==  true){
+  if (get_token() == true) {
     $newterm = new stdClass();
     $newterm->name = $request->request['name'];
     $newterm->description = $request->request['description'];
     $newterm->parent = 0;
     taxonomy_term_save($newterm);
-    print '<pre>';
-    print_r($newterm);
-    print '</pre>';
-    exit();
+    dd($newterm);
   }
 }
 
@@ -380,26 +360,23 @@ function my_custom_term_update()
   $term = taxonomy_term_load($tid);
 
 
-
-  if (get_token() == true && $vocabulary->vid == $term->vid){
+  if (get_token() == true && $vocabulary->vid == $term->vid) {
     $term->name = $request->request['name'];
     $term->description = $request->request['description'];
     $term->parent = 0;
     taxonomy_term_save($term);
-    print '<pre>';
-    print_r($term);
-    print '</pre>';
-    exit();
+    dd($term);
   }
 }
 
-function my_custom_term_delete(){
+function my_custom_term_delete()
+{
   $request = OAuth2\Request::createFromGlobals();
   $vid = arg(2);
   $vocabulary = taxonomy_vocabulary_load($vid);
   $tid = arg(4);
   $term = taxonomy_term_load($tid);
-  if (get_token() == true && $vocabulary->vid == $term->vid){
+  if (get_token() == true && $vocabulary->vid == $term->vid) {
     taxonomy_term_delete($term->tid);
   }
 }
