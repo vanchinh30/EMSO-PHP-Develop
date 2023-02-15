@@ -36,10 +36,11 @@ function get_token()
 
 function my_custom_table_menu()
 {
-  $items['admin/custom/my_custom_table/add'] = array(
+  $items['admin/custom/my_custom_table/%/add'] = array(
     'title' => 'My Custom Table',
     'description' => 'View My Custom Table.',
     'page callback' => 'my_custom_table_block_view',
+    'page argument' => array(3),
     'access arguments' => array('access my_custom_table'),
     'weight' => -14,
   );
@@ -77,17 +78,19 @@ function my_custom_table_menu()
     'access arguments' => array('access content'),
   );
 
-  $items['admin/custom_node/node/update'] = array(
+  $items['admin/custom_node/node/%/update'] = array(
     'title' => 'Update Node',
     'description' => 'Update Custom Node.',
     'page callback' => 'my_custom_form_update',
+    'page argument' => array(3),
     'access arguments' => array('access content'),
   );
 
-  $items['admin/custom_node/node/delete'] = array(
+  $items['admin/custom_node/node/%/delete'] = array(
     'title' => 'Delete Node',
     'description' => 'Delete Custom Node.',
     'page callback' => 'my_custom_form_delete',
+    'page argument' => array(3),
     'access arguments' => array('access content'),
   );
 
@@ -98,17 +101,19 @@ function my_custom_table_menu()
     'access arguments' => array('access content'),
   );
 
-  $items['admin/custom_user/user/update'] = array(
+  $items['admin/custom_user/user/%/update'] = array(
     'title' => 'Update User',
     'description' => 'Update Custom User.',
     'page callback' => 'my_custom_user_update',
+    'page argument' => array(3),
     'access arguments' => array('access content'),
   );
 
-  $items['admin/custom_user/user/delete'] = array(
+  $items['admin/custom_user/user/%/delete'] = array(
     'title' => 'Delete User',
     'description' => 'Delete Custom User.',
     'page callback' => 'my_custom_user_delete',
+    'page argument' => array(3),
     'access arguments' => array('access content'),
   );
 
@@ -119,17 +124,19 @@ function my_custom_table_menu()
     'access arguments' => array('access content'),
   );
 
-  $items['admin/custom_taxonomy/taxonomy/update'] = array(
+  $items['admin/custom_taxonomy/taxonomy/%/update'] = array(
     'title' => 'Update Taxonomy',
     'description' => 'Update Custom Taxonomy',
     'page callback' => 'my_custom_taxonomy_update',
+    'page argument' => array(3),
     'access arguments' => array('access content'),
   );
 
-  $items['admin/custom_taxonomy/taxonomy/delete'] = array(
+  $items['admin/custom_taxonomy/taxonomy/%/delete'] = array(
     'title' => 'Delete Taxonomy',
     'description' => 'Delete Custom Taxonomy',
     'page callback' => 'my_custom_taxonomy_delete',
+    'page argument' => array(3),
     'access arguments' => array('access content'),
   );
 
@@ -140,17 +147,19 @@ function my_custom_table_menu()
     'access arguments' => array('access content'),
   );
 
-  $items['admin/custom_term/term/update'] = array(
+  $items['admin/custom_term/%/term/%/update'] = array(
     'title' => 'Update Term',
     'description' => 'Update Custom Term',
     'page callback' => 'my_custom_term_update',
+    'page argument' => array(2,4),
     'access arguments' => array('access content'),
   );
 
-  $items['admin/custom_term/term/delete'] = array(
+  $items['admin/custom_term/%/term/%/delete'] = array(
     'title' => 'Delete Term',
     'description' => 'Delete Custom Term',
     'page callback' => 'my_custom_term_delete',
+    'page argument' => array(2,4),
     'access arguments' => array('access content'),
   );
 
@@ -202,8 +211,9 @@ function my_custom_form_update()
 {
   $request = OAuth2\Request::createFromGlobals();
 
+
   if (get_token() == true) {
-    $nid = $request->request['nid'];
+    $nid = arg(3);
     $node = node_load($nid);
     $node->title = $request->request['title'];
     $node->body[LANGUAGE_NONE][0]['summary'] = $request->request['summary'];
@@ -234,7 +244,7 @@ function my_custom_form_delete()
 //  print '</pre>';
 //  exit();
   if(get_token() == true){
-    $nid = $request->request['nid'];
+    $nid = arg(3);
     node_delete($nid);
   }
 }
@@ -270,7 +280,7 @@ function my_custom_user_update()
   $request = OAuth2\Request::createFromGlobals();
 
   if (get_token() ==  true) {
-    $uid_user = $request->request['uid'];
+    $uid_user = arg(3);
     $account = user_load($uid_user);
 
     $account->name = $request->request['username'];
@@ -293,7 +303,7 @@ function my_custom_user_delete()
   $request = OAuth2\Request::createFromGlobals();
 
   if (get_token() == true) {
-    $uid_user = $request->request['uid'];
+    $uid_user = arg(3);
     $account = user_load($uid_user);
     user_delete($account->uid);
   }
@@ -324,7 +334,7 @@ function my_custom_taxonomy_create()
 function my_custom_taxonomy_update(){
   $request = OAuth2\Request::createFromGlobals();
   if (get_token() ==  true){
-    $vid = $request->request['vid'];
+    $vid = arg(3);
     $vocabulary = taxonomy_vocabulary_load($vid);
     $vocabulary->name = $request->request['name'];
     $vocabulary->machine_name = $request->request['machine_name'];
@@ -341,7 +351,7 @@ function my_custom_taxonomy_update(){
 function my_custom_taxonomy_delete(){
   $request = OAuth2\Request::createFromGlobals();
   if (get_token() ==  true){
-    $vid = $request->request['vid'];
+    $vid = arg(3);
     $vocabulary = taxonomy_vocabulary_load($vid);
     taxonomy_vocabulary_delete($vocabulary->vid);
   }
@@ -366,10 +376,12 @@ function my_custom_term_create(){
 function my_custom_term_update()
 {
   $request = OAuth2\Request::createFromGlobals();
-  $vid = $request->request['vid'];
+  $vid = arg(2);
   $vocabulary = taxonomy_vocabulary_load($vid);
-  $tid = $request->request['tid'];
+  $tid = arg(4);
   $term = taxonomy_term_load($tid);
+
+
 
   if (get_token() == true && $vocabulary->vid == $term->vid){
     $term->name = $request->request['name'];
@@ -385,9 +397,9 @@ function my_custom_term_update()
 
 function my_custom_term_delete(){
   $request = OAuth2\Request::createFromGlobals();
-  $vid = $request->request['vid'];
+  $vid = arg(2);
   $vocabulary = taxonomy_vocabulary_load($vid);
-  $tid = $request->request['tid'];
+  $tid = arg(4);
   $term = taxonomy_term_load($tid);
   if (get_token() == true && $vocabulary->vid == $term->vid){
     taxonomy_term_delete($term->tid);
